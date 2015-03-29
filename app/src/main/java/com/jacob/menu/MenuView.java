@@ -1,5 +1,9 @@
 package com.jacob.menu;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -7,8 +11,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nineoldandroids.view.ViewHelper;
 
 /**
  * Created by jacob-wj on 2015/3/29.
@@ -30,6 +39,8 @@ public class MenuView extends ViewGroup {
 
     //菜单上下左右的间距
     private int mPadding = dpToPx(20);
+
+    private boolean isMenuShowing = false;
 
 
     private onMenuClickListener onMenuListener;
@@ -123,22 +134,94 @@ public class MenuView extends ViewGroup {
             imageView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (onMenuListener != null){
+                    if (onMenuListener != null) {
                         onMenuListener.onMenuClick(index);
                     }
                 }
             });
             view.setVisibility(INVISIBLE);
-            Log.e(TAG,"haha:"+view.getMeasuredWidth());
             addView(view);
         }
     }
 
+    /**
+     * 显示菜单
+     */
+    public void showMenu(){
+        int count = getChildCount();
+        int screenHeight = getMeasuredHeight();
+        for (int i = 0; i < count; i++) {
+            final  View child = getChildAt(i);
+            final float  startY= child.getY();
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(
+                    child,View.Y,
+                    screenHeight,
+                    startY-25,
+                    startY+10,
+                    startY)
+                    .setDuration(450);
+            objectAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    child.setVisibility(VISIBLE);
+                    child.setY(startY);
+                }
 
-    public void startAnim(){
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    child.setVisibility(VISIBLE);
+                }
+            });
+            objectAnimator.setInterpolator(new AccelerateInterpolator());
+            AnimatorSet animatorSet =new AnimatorSet();
+            animatorSet.setDuration(450);
+            animatorSet.setStartDelay(i * 25);
+            animatorSet.play(objectAnimator);
+            animatorSet.start();
+        }
+        isMenuShowing = true;
+    }
+
+    /**
+     * 关闭菜单
+     */
+    public void closeMenu(){
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
-            View child = getChildAt(i);
+            final  View child = getChildAt(i);
+            child.setVisibility(VISIBLE);
+            final float  startY= child.getY();
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(
+                    child,View.Y,
+                    child.getY(),
+                    -child.getMeasuredWidth())
+                    .setDuration(300);
+
+            objectAnimator.setInterpolator(new AccelerateInterpolator());
+            objectAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    child.setVisibility(INVISIBLE);
+                    child.setY(startY);
+                }
+            });
+            AnimatorSet animatorSet =new AnimatorSet();
+            animatorSet.setDuration(300);
+            animatorSet.setStartDelay(i*20);
+            animatorSet.play(objectAnimator);
+            animatorSet.start();
+        }
+        isMenuShowing = false;
+    }
+
+    public void toggleMenu(){
+        if (isMenuShowing){
+            closeMenu();
+        }else{
+            showMenu();
         }
     }
 

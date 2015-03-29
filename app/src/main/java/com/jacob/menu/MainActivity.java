@@ -2,6 +2,8 @@ package com.jacob.menu;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -37,4 +39,12 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
+    public void startAnim(View view){
+        Log.e("stat:","start");
+        mMenuView.showMenu();
+    }
+    public void finishAnim(View view){
+        Log.e("stat:","start");
+        mMenuView.closeMenu();
+    }
 }
