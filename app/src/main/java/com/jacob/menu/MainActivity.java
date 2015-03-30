@@ -41,10 +41,6 @@ public class MainActivity extends FragmentActivity {
 
     public void startAnim(View view){
         Log.e("stat:","start");
-        mMenuView.showMenu();
-    }
-    public void finishAnim(View view){
-        Log.e("stat:","start");
-        mMenuView.closeMenu();
+        mMenuView.toggleMenu();
     }
 }

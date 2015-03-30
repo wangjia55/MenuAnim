@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -12,12 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nineoldandroids.view.ViewHelper;
 
 /**
  * Created by jacob-wj on 2015/3/29.
@@ -40,21 +39,29 @@ public class MenuView extends ViewGroup {
     //菜单上下左右的间距
     private int mPadding = dpToPx(20);
 
+    //菜单是否已经显示
     private boolean isMenuShowing = false;
 
+    //每个icon的delay延迟时间
+    private int[] mAnimDelay = new int[]{75,5,90,135,105,160};
 
+    //动画持续时间
+    public static final int DURATION = 350;
+
+    //对外暴露的使用接口
     private onMenuClickListener onMenuListener;
 
     public MenuView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public MenuView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public MenuView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setBackgroundColor(Color.parseColor("#79000000"));
     }
 
 
@@ -103,14 +110,14 @@ public class MenuView extends ViewGroup {
     /**
      * 设置菜单按钮的图片和文案
      */
-    public void setMenuResource(int[] mDrawalbes, String[] mTitles) {
-        if (mDrawalbes == null || mTitles == null)
+    public void setMenuResource(int[] drawables, String[] mTitles) {
+        if (drawables == null || mTitles == null)
             return;
 
-        this.mDrawables = mDrawalbes;
+        this.mDrawables = drawables;
         this.mTitles = mTitles;
 
-        mChildCount = mDrawalbes.length;
+        mChildCount = drawables.length;
 
         //根据子菜单的个数添加menu
         addItemView();
@@ -159,7 +166,7 @@ public class MenuView extends ViewGroup {
                     startY-25,
                     startY+10,
                     startY)
-                    .setDuration(450);
+                    .setDuration(DURATION);
             objectAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -176,8 +183,8 @@ public class MenuView extends ViewGroup {
             });
             objectAnimator.setInterpolator(new AccelerateInterpolator());
             AnimatorSet animatorSet =new AnimatorSet();
-            animatorSet.setDuration(450);
-            animatorSet.setStartDelay(i * 25);
+            animatorSet.setDuration(DURATION);
+            animatorSet.setStartDelay(mAnimDelay[i]);
             animatorSet.play(objectAnimator);
             animatorSet.start();
         }
@@ -197,9 +204,9 @@ public class MenuView extends ViewGroup {
                     child,View.Y,
                     child.getY(),
                     -child.getMeasuredWidth())
-                    .setDuration(300);
+                    .setDuration(DURATION);
 
-            objectAnimator.setInterpolator(new AccelerateInterpolator());
+            objectAnimator.setInterpolator(new DecelerateInterpolator());
             objectAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -209,8 +216,8 @@ public class MenuView extends ViewGroup {
                 }
             });
             AnimatorSet animatorSet =new AnimatorSet();
-            animatorSet.setDuration(300);
-            animatorSet.setStartDelay(i*20);
+            animatorSet.setDuration(DURATION);
+            animatorSet.setStartDelay(mAnimDelay[i]);
             animatorSet.play(objectAnimator);
             animatorSet.start();
         }

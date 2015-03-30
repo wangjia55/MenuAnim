@@ -16,12 +16,5 @@
         android:onClick="startAnim"
         android:text="START"/>
 
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/button_start"
-        android:layout_alignParentBottom="true"
-        android:onClick="finishAnim"
-        android:text="Finish"/>
 
 </RelativeLayout>
